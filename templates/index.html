@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en"> <!-- This declares the document type and sets the language to English -->
+<head>
+    <meta charset="UTF-8"> <!-- This specifies the character encoding for the document, allowing it to display text correctly -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- This makes the website responsive, adjusting its layout on different screen sizes -->
+    <title>Edit Distance and Alignment</title> <!-- This sets the title of the webpage, which appears in the browser tab -->
+    <style>
+        /* The following CSS styles define how the webpage will look */
+        body {
+            font-family: Arial, sans-serif; /* Sets the font type for the webpage */
+            margin: 20px; /* Adds space around the content of the page */
+        }
+        table {
+            border-collapse: collapse; /* Ensures that borders of table cells are merged for a cleaner appearance */
+            margin-top: 20px; /* Adds space above the table */
+        }
+        td {
+            border: 1px solid #333; /* Creates a solid border around each table cell */
+            padding: 10px; /* Adds space inside each cell, making the content less cramped */
+            text-align: center; /* Centers the text within each cell */
+        }
+        th {
+            border: 1px solid #333; /* Creates a solid border around table header cells */
+            padding: 10px; /* Adds space inside header cells */
+            text-align: center; /* Centers the text within header cells */
+            background-color: #f2f2f2; /* Sets a light gray background color for header cells */
+        }
+        .highlight { /* New class for the final edit distance cell */
+            background-color: #ffcc00; /* Yellow background for emphasis */
+            font-weight: bold; /* Make text bold */
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Distance and Global Alignment</h1> <!-- Main heading for the webpage -->
+    <form method="POST"> <!-- Starts a form for user input that will send data via POST method -->
+        <label for="str1">First Word:</label> <!-- Label for the first input field -->
+        <input type="text" id="str1" name="str1" required> <!-- Input field for the first word, marked as required -->
+        <br> <!-- Line break for spacing -->
+        <label for="str2">Second Word:</label> <!-- Label for the second input field -->
+        <input type="text" id="str2" name="str2" required> <!-- Input field for the second word, marked as required -->
+        <br> <!-- Line break for spacing -->
+        <button type="submit">Submit</button> <!-- Button to submit the form -->
+    </form>
+
+    {% if edit_distance is not none %} <!-- This checks if the edit distance has been calculated -->
+        <h2>Results:</h2> <!-- Subheading for the results section -->
+        <p>Edit Distance: {{ edit_distance }}</p> <!-- Displays the calculated edit distance -->
+        <p>Alignment:</p> <!-- Heading for the alignment results -->
+        <p>{{ alignment_str1 }}</p> <!-- Displays the aligned first word -->
+        <p>{{ alignment_str2 }}</p> <!-- Displays the aligned second word -->
+        <h3>Alignment Matrix:</h3> <!-- Subheading for the alignment matrix section -->
+        <table> <!-- Starts a table to display the alignment matrix -->
+            <tr> <!-- Starts a new row in the table -->
+                <th></th> <!-- Empty header cell for the top-left corner -->
+                <th></th> <!-- Additional empty header to shift the characters of the second word to the right -->
+                {% for char in str2 %} <!-- Loop through each character in the second word -->
+                    <th>{{ char }}</th> <!-- Creates a header cell for each character in the second word -->
+                {% endfor %}
+            </tr>
+            {% for i in range(graph|length) %} <!-- Loop through each row of the alignment matrix -->
+                <tr> <!-- Starts a new row in the table for the current character of the first word -->
+                    <th>{{ str1[i-1] if i > 0 else '' }}</th> <!-- Header cell for the current character of the first word; displays the character if i > 0, otherwise shows an empty cell -->
+                    {% for j in range(graph[i]|length) %} <!-- Loop through each cell in the current row of the matrix -->
+                        {% if i == graph|length - 1 and j == graph[i]|length - 1 %} <!-- Check if the current cell is the last cell in the matrix (final edit distance) -->
+                            <td class="highlight">{{ graph[i][j] }}</td> <!-- Highlight the final edit distance cell with a special class -->
+                        {% else %}
+                            <td>{{ graph[i][j] }}</td> <!-- Display the value in the current cell of the alignment matrix without highlighting -->
+                        {% endif %}
+                    {% endfor %}
+                </tr> <!-- End of the current row -->
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
